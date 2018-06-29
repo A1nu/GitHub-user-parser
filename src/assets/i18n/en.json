@@ -1,3 +1,8 @@
 {
-  "TITLE" : "MY APP!"
+  "TITLE" : "HELMES",
+  "LOGIN_BUTTON" : "Login",
+  "LOGGED_BUTTON" : "API ready",
+  "SEARCH_FIELD_PLACEHOLDER" : "Search user from GitHub",
+  "SEARCH_FIELD_EMPTY_ERROR" : "Username is required",
+  "SEARCH_BUTTON_TEXT" : "Search"
 }

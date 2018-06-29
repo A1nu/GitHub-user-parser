@@ -1,0 +1,23 @@
+<div class="wrapper">
+  <div class="search-field-container">
+    <form name="usernameSearch" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+      <div class="error-holder">
+        <div *ngIf="f.submitted && username.invalid" class="invalid-feedback">
+          <div *ngIf="username.errors.required">{{'SEARCH_FIELD_EMPTY_ERROR' | translate}}</div>
+        </div>
+      </div>
+     <div class="input-container">
+       <input placeholder="{{'SEARCH_FIELD_PLACEHOLDER' | translate}}" type="text" class="search-input" name="username" [(ngModel)]="model.username" #username="ngModel" [ngClass]="{ 'is-invalid': f.submitted && username.invalid }" required />
+       <button class="btn btn-primary" [ngClass]="{ 'is-invalid': f.submitted && username.invalid }">{{'SEARCH_BUTTON_TEXT' | translate}}</button>
+     </div>
+    </form>
+  </div>
+
+  <div class="display-switcher">
+    <div class="text-holder">GitHub most popular users</div>
+    <div class="display-switcher-container">
+      <div class="material-icons">view_list</div>
+      <div class="material-icons">border_all</div>
+    </div>
+  </div>
+</div>
