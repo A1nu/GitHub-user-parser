@@ -2,7 +2,8 @@
   "TITLE" : "HELMES",
   "LOGIN_BUTTON" : "Login",
   "LOGGED_BUTTON" : "API ready",
-  "SEARCH_FIELD_PLACEHOLDER" : "Search user from GitHub",
+  "PENDING_BUTTON" : "Authorisation in progress",
+  "SEARCH_FIELD_PLACEHOLDER" : "Username",
   "SEARCH_FIELD_EMPTY_ERROR" : "Username is required",
   "SEARCH_BUTTON_TEXT" : "Search"
 }

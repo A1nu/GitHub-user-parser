@@ -1,13 +1,18 @@
-<div class="header-container">
+<div class="header">
   <h1>
     {{ 'TITLE' | translate }}
   </h1>
-  <div class="login">
-    <div class="button-container">
-      <div class="login-button logged" [hidden]="!logged">{{ 'LOGGED_BUTTON' | translate }}</div>
-      <div class="login-button" (click)="logIntoGithub();" [hidden]="logged">{{ 'LOGIN_BUTTON' | translate }}</div>
-    </div>
+  <div class="header__login-form">
+      <div class="header__login-button header__login-button_logged" [hidden]="!logged">
+          {{ 'LOGGED_BUTTON' | translate }}
+      </div>
+      <div class="header__login-button header__login-button_logged" [hidden]="!pendingAuthorisation">
+          {{ 'PENDING_BUTTON' | translate }}
+      </div>
+      <div class="header__login-button" (click)="logIntoGithub();" [hidden]="logged || pendingAuthorisation">
+          {{ 'LOGIN_BUTTON' | translate }}
+      </div>
   </div>
 </div>
 
-<app-landing></app-landing>
+<router-outlet></router-outlet>

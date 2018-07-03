@@ -8,17 +8,18 @@ export class GithubService {
 	private clientId = '60b2fb9b7c5bcff2d316';
 	private clientSecret = 'fe37b677b90c873588b7e599984a9865fcc4f798';
 	private accessToken: string;
-	private apiLink = 'https://api.github.com';
 
 	constructor(private http: HttpClient) {}
 
 	getToken(code: string): Promise<any> {
-		const url = 'https://github.com/login/oauth/access_token';
+		const url =
+			'https://cors-anywhere.herokuapp.com/https://github.com/login/oauth/access_token';
 
 		return this.http
 			.post(url, null, {
 				headers: {
-					Accept: 'application/json'
+					Accept: 'application/json',
+					'Content-Type': 'application/x-www-form-urlencoded'
 				},
 				responseType: 'json',
 				params: {
@@ -37,16 +38,22 @@ export class GithubService {
 			});
 	}
 
-	getPopularUsersList() {
-		const url = `${this.apiLink}/search/users`;
-		this.http
-			.get(url, {
-				params: {
-					q: 'followers'
+	getPopularUsersList(query, variables) {
+		const url = 'https://api.github.com/graphql';
+
+		return this.http
+			.post(
+				url,
+				{ query: query, variables: variables },
+				{
+					headers: {
+						Authorization: `bearer ${this.accessToken}`
+					}
 				}
-			})
-			.subscribe((data) => {
-				console.log(data);
+			)
+			.toPromise()
+			.then((data) => {
+				return data;
 			});
 	}
 

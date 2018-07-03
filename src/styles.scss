@@ -4,4 +4,8 @@ body {
   font-family: Calibri;
   padding-right: 5%;
   padding-left: 5%;
+  @media (max-width: 800px) {
+    padding-right: 1%;
+    padding-left: 1%;
+  }
 }

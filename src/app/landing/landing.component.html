@@ -1,23 +1,61 @@
-<div class="wrapper">
-  <div class="search-field-container">
-    <form name="usernameSearch" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
-      <div class="error-holder">
-        <div *ngIf="f.submitted && username.invalid" class="invalid-feedback">
+<div class="content">
+  <div class="content__search-field">
+    <form name="usernameSearch" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate class="search-form">
+      <div class="search-form__error">
+        <div *ngIf="f.submitted && username.invalid" class="search-form__error__invalid-feedback">
           <div *ngIf="username.errors.required">{{'SEARCH_FIELD_EMPTY_ERROR' | translate}}</div>
         </div>
       </div>
-     <div class="input-container">
-       <input placeholder="{{'SEARCH_FIELD_PLACEHOLDER' | translate}}" type="text" class="search-input" name="username" [(ngModel)]="model.username" #username="ngModel" [ngClass]="{ 'is-invalid': f.submitted && username.invalid }" required />
-       <button class="btn btn-primary" [ngClass]="{ 'is-invalid': f.submitted && username.invalid }">{{'SEARCH_BUTTON_TEXT' | translate}}</button>
+     <div class="search-form__input-container">
+       <input placeholder="{{'SEARCH_FIELD_PLACEHOLDER' | translate}}"
+              type="text"
+              class="search-form__input"
+              name="username" [(ngModel)]="model.username"
+              #username="ngModel"
+              [ngClass]="{ 'search-form__input_is-invalid': f.submitted && username.invalid }" required />
+       <button class="search-form__button" [ngClass]="{ 'is-invalid': f.submitted && username.invalid }">
+         {{'SEARCH_BUTTON_TEXT' | translate}}
+       </button>
      </div>
     </form>
   </div>
 
-  <div class="display-switcher">
-    <div class="text-holder">GitHub most popular users</div>
-    <div class="display-switcher-container">
+  <div class="display-switcher content__display-switcher">
+    <div class="display-switcher__text">GitHub most popular users</div>
+    <div class="display-switcher__icons">
       <div class="material-icons">view_list</div>
-      <div class="material-icons">border_all</div>
+      <div class="material-icons display-switcher__icon_inverted">border_all</div>
+    </div>
+  </div>
+
+  <div class="user-wrapper content__user-wrapper" *ngIf="getAuthorizationStatus()">
+    <div class="loader user-wrapper__loader" [hidden]="!contentLoading">
+      <div class="loader__holder">
+        <div class="loader__preloader"><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div></div>
+      </div>
+    </div>
+
+    <div *ngIf="userDisplayedList.length > 0">
+      <div class="user-wrapper__item"  *ngFor="let item of userDisplayedList">
+        <div class="user-wrapper__item user-wrapper__item_user-info">
+          <img src="{{item.avatarUrl}}" class="user-wrapper__avatar">
+          <div class="user-wrapper__information">
+            <div class="user-wrapper__name" routerLink="{{item.login}}">{{item.name}}</div>
+            <div class="user-wrapper__type">{{item.__typename}}</div>
+          </div>
+        </div>
+        <div class="user-wrapper__repositories user-wrapper__repositories_empty"
+             *ngIf="!(item.repositories.nodes.length > 0)">Repos is empty</div>
+        <div class="user-wrapper__repositories" *ngIf="item.repositories.nodes.length > 0">
+          <div class="user-wrapper__repositories__title">User repos</div>
+          <div class="user-wrapper__repository"
+               *ngFor="let repo of sortByNameLength(item.repositories.nodes)"
+               (click)="redirectToUrl(repo.url)">
+            {{repo.name}}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
