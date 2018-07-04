@@ -3,7 +3,7 @@
   "LOGIN_BUTTON" : "Login",
   "LOGGED_BUTTON" : "API ready",
   "PENDING_BUTTON" : "Authorisation in progress",
-  "BACK_BUTTON" : "USER_REPOSITORIES",
+  "BACK_BUTTON" : "Back",
   "SEARCH_FIELD_PLACEHOLDER" : "Username",
   "SEARCH_FIELD_EMPTY_ERROR" : "Field is empty",
   "SEARCH_BUTTON_TEXT" : "Search",

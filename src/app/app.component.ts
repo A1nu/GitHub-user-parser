@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { GithubService } from './services/github.service';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthorizationService } from './services/authorization.service';
-import { LocalStorageService } from 'ngx-store';
+import { SessionStorageService } from 'ngx-store';
 
 @Component({
 	selector: 'app-root',
@@ -19,18 +19,19 @@ export class AppComponent implements OnInit {
 		private gitHubService: GithubService,
 		private cookieService: CookieService,
 		private authorizationService: AuthorizationService,
-		private localStorageService: LocalStorageService
+		private sessionStorageService: SessionStorageService
 	) {
 		translate.setDefaultLang('en');
 		translate.use('en');
 	}
 
 	ngOnInit() {
-		this.localStorageService.set(
+		this.sessionStorageService.set(
 			'searchKey',
 			'{ "queryString": "followers:>10000" }'
 		);
-		this.localStorageService.set('username', '');
+		this.sessionStorageService.set('username', '');
+		this.sessionStorageService.set('userDisplayedList', {});
 		this.checkAuthorization();
 	}
 

@@ -30,6 +30,12 @@
       background-color: #269f42;
       background-image: linear-gradient(-180deg, #2fcb53 0%, #269f42 90%);
       cursor: auto;
+      &.header__login-button:hover{
+        background-color: #269f42;
+        background-image: linear-gradient(-180deg, #2fcb53 0%, #269f42 90%);
+        cursor: auto;
+      }
+
     }
   }
 }

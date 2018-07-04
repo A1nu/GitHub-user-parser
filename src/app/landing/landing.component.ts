@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GithubService } from '../services/github.service';
 import { AuthorizationService } from '../services/authorization.service';
-import { LocalStorage, LocalStorageService } from 'ngx-store';
+import { LocalStorageService, SessionStorageService } from 'ngx-store';
 
 @Component({
 	selector: 'app-landing',
@@ -29,7 +29,7 @@ export class LandingComponent implements OnInit {
 		'        login\n' +
 		'        url\n' +
 		'        avatarUrl\n' +
-		'        repositories(first: 3) {\n' +
+		'        repositories(first: 3, orderBy: {field: UPDATED_AT, direction: DESC}) {\n' +
 		'          nodes {\n' +
 		'            name\n' +
 		'            url\n' +
@@ -43,7 +43,8 @@ export class LandingComponent implements OnInit {
 	constructor(
 		private gitHubService: GithubService,
 		private authorizationService: AuthorizationService,
-		private localStorageService: LocalStorageService
+		private localStorageService: LocalStorageService,
+		private sessionStorage: SessionStorageService
 	) {}
 
 	ngOnInit() {
@@ -55,8 +56,8 @@ export class LandingComponent implements OnInit {
 		const username = this.model.username;
 		const queryVariables = `{ "queryString": "${username}" }`;
 
-		this.localStorageService.set('searchKey', queryVariables);
-		this.localStorageService.set('username', username);
+		this.sessionStorage.set('searchKey', queryVariables);
+		this.sessionStorage.set('username', username);
 		this.searchName = username;
 		this.setLastSearch(username);
 		this.getUsers(this.mostPopularUserQuery, queryVariables);
@@ -87,6 +88,7 @@ export class LandingComponent implements OnInit {
 			.then((data) => {
 				this.userDisplayedList = data['data']['search']['nodes'];
 				this.contentLoading = false;
+				this.sessionStorage.set('userDisplayedList', this.userDisplayedList);
 			})
 			.catch((err) => {
 				this.contentLoading = false;
@@ -107,10 +109,14 @@ export class LandingComponent implements OnInit {
 			!this.contentLoading &&
 			this.firstLoad
 		) {
-			const query = this.mostPopularUserQuery;
-			const searchKey = this.localStorageService.get('searchKey');
-			this.getUsers(query, searchKey);
-			this.searchName = this.localStorageService.get('username');
+			if (!this.isEmptyRequest(this.sessionStorage.get('userDisplayedList'))) {
+				this.userDisplayedList = this.sessionStorage.get('userDisplayedList');
+			} else {
+				const query = this.mostPopularUserQuery;
+				const searchKey = this.sessionStorage.get('searchKey');
+				this.getUsers(query, searchKey);
+			}
+			this.searchName = this.sessionStorage.get('username');
 			this.model = { username: this.searchName };
 			this.firstLoad = false;
 			this.logged = true;

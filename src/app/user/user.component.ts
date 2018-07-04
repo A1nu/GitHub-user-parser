@@ -26,7 +26,7 @@ export class UserComponent implements OnInit {
 		'        url\n' +
 		'      }\n' +
 		'    }\n' +
-		'    repositories (first: 3) {\n' +
+		'    repositories(first: 3, orderBy: {field: UPDATED_AT, direction: DESC}) {\n' +
 		'      nodes {\n' +
 		'        name\n' +
 		'        url\n' +
