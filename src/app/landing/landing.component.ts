@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { GithubService } from '../github.service';
-import { AuthorizationService } from '../authorization.service';
+import { GithubService } from '../services/github.service';
+import { AuthorizationService } from '../services/authorization.service';
+import { LocalStorage, LocalStorageService } from 'ngx-store';
 
 @Component({
 	selector: 'app-landing',
@@ -8,18 +9,22 @@ import { AuthorizationService } from '../authorization.service';
 	styleUrls: ['./landing.component.scss']
 })
 export class LandingComponent implements OnInit {
-	public userDisplayedList;
 	public contentLoading = false;
 	public model: any = {};
 	public userDisplayedList = [];
+	public searchName: string;
+	public lastSearches: any[] = [];
+	public firstLoad = true;
+	public tiled: boolean;
+	public logged: boolean;
 
-	private mostPopularUserSchema =
+	private mostPopularUserQuery: string =
 		'query SearchMostPopular($queryString: String!) {\n' +
 		'  search(query: $queryString, type: USER, first: 10) {\n' +
 		'    userCount\n' +
 		'    nodes {\n' +
-		'      __typename\n' +
 		'      ... on User {\n' +
+		'        __typename\n' +
 		'        name\n' +
 		'        login\n' +
 		'        url\n' +
@@ -34,22 +39,30 @@ export class LandingComponent implements OnInit {
 		'    }\n' +
 		'  }\n' +
 		'}\n';
-	private mostPopularUserQuery = '{ "queryString": "followers:>10000" }';
 
 	constructor(
 		private gitHubService: GithubService,
-		private authorizationService: AuthorizationService
+		private authorizationService: AuthorizationService,
+		private localStorageService: LocalStorageService
 	) {}
 
 	ngOnInit() {
+		this.getLastSearches();
 		this.getAuthorizationStatus();
 	}
 
-	onSubmit() {
-		alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.model));
+	onSubmit(): void {
+		const username = this.model.username;
+		const queryVariables = `{ "queryString": "${username}" }`;
+
+		this.localStorageService.set('searchKey', queryVariables);
+		this.localStorageService.set('username', username);
+		this.searchName = username;
+		this.setLastSearch(username);
+		this.getUsers(this.mostPopularUserQuery, queryVariables);
 	}
 
-	redirectToUrl(url: string) {
+	redirectToUrl(url: string): void {
 		const a = document.createElement('a');
 
 		document.body.appendChild(a);
@@ -61,31 +74,84 @@ export class LandingComponent implements OnInit {
 		a.remove();
 	}
 
-	sortByNameLength(data) {
+	sortByNameLength(data: any): any {
 		return data.sort((a, b) => {
 			return a.name.length - b.name.length;
 		});
 	}
 
-	getPopularUsers() {
+	getUsers(query: string, variables: string): void {
 		this.contentLoading = true;
 		this.gitHubService
-			.getPopularUsersList(
-				this.mostPopularUserSchema,
-				this.mostPopularUserQuery
-			)
+			.requestData(query, variables)
 			.then((data) => {
-				this.contentLoading = false;
 				this.userDisplayedList = data['data']['search']['nodes'];
+				this.contentLoading = false;
+			})
+			.catch((err) => {
+				this.contentLoading = false;
+				console.log(err);
 			});
 	}
 
 	getAuthorizationStatus(): boolean {
 		if (this.authorizationService.getAuthorizationStatus()) {
-			if (!this.userDisplayedList.length > 0) {
-				this.getPopularUsers();
-			}
+			this.loadContent();
 			return true;
 		}
+	}
+
+	loadContent(): void {
+		if (
+			!(this.userDisplayedList.length > 0) &&
+			!this.contentLoading &&
+			this.firstLoad
+		) {
+			const query = this.mostPopularUserQuery;
+			const searchKey = this.localStorageService.get('searchKey');
+			this.getUsers(query, searchKey);
+			this.searchName = this.localStorageService.get('username');
+			this.model = { username: this.searchName };
+			this.firstLoad = false;
+			this.logged = true;
+		}
+	}
+
+	setLastSearch(key: string): void {
+		this.lastSearches = this.localStorageService.get('lastSearches');
+		if (this.lastSearches != null && this.lastSearches.length > 2) {
+			this.lastSearches.shift();
+			this.lastSearches.push(key);
+		} else {
+			this.lastSearches.unshift(key);
+		}
+		this.localStorageService.set('lastSearches', this.lastSearches);
+	}
+
+	getLastSearches(): void {
+		const storageData = this.localStorageService.get('lastSearches');
+		if (storageData != null) {
+			this.lastSearches = this.localStorageService.get('lastSearches');
+		}
+	}
+
+	sortSearches(data: any[]): any[] {
+		return data.sort((a, b) => {
+			return a.length - b.length;
+		});
+	}
+
+	isEmptyRequest(obj: object): boolean {
+		for (const key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	repeatSearch(username: string): void {
+		const queryVariables = `{ "queryString": "${username}" }`;
+		this.getUsers(this.mostPopularUserQuery, queryVariables);
 	}
 }

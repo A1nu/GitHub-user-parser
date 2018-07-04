@@ -37,6 +37,7 @@
     "material-design-icons": "^3.0.1",
     "ngx-cookie-service": "^1.0.10",
     "ngx-pagination": "^3.1.1",
+    "ngx-store": "^2.0.0",
     "rxjs": "^6.0.0",
     "tslint-config-airbnb": "^5.9.2",
     "zone.js": "^0.8.26"

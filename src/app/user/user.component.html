@@ -1,3 +1,41 @@
-<p>
-  user works! {{username}}
-</p>
+<div class="loader">
+  <div class="loader user-wrapper__loader" [hidden]="!loading">
+    <div class="loader__holder">
+      <div class="loader__preloader"><div></div><div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+  </div>
+</div>
+<div class="detailed-info" *ngIf="!loading">
+  <div class="detailed-info__back-button" routerLink="/" [innerHTML]="'USER_REPOSITORIES' | translate"></div>
+  <div class="detailed-info__username">{{this.username}}</div>
+
+  <div class="detailed-info__wrapper wrapper">
+    <img src="{{detailedInfoContent.avatarUrl}}" class="detailed-info__avatar">
+    <div class="detailed-info__information">
+      <div class="detailed-info__user-name" (click)="redirectToUrl(detailedInfoContent.url)">{{detailedInfoContent.name != null ? detailedInfoContent.name : detailedInfoContent.login}}</div>
+      <div class="detailed-info__type">{{detailedInfoContent.__typename}}</div>
+
+      <div class="detailed-info__title" [innerHTML]="'USER_REPOSITORIES' | translate"></div>
+      <div *ngIf="detailedInfoContent.repositories.nodes.length === 0" [innerHTML]="'REPOS_EMPTY' | translate"></div>
+      <div *ngIf="detailedInfoContent.repositories.nodes.length > 0">
+        <div class="detailed-info__name"
+             *ngFor="let item of sortByNameLength(detailedInfoContent.repositories.nodes)" (click)="redirectToUrl(item.url)">
+          {{item.name}}
+        </div>
+      </div>
+
+      <div class="detailed-info__title" [innerHTML]="'USER_ORGANIZATIONS' | translate"></div>
+      <div *ngIf="detailedInfoContent.organizations.nodes.length === 0"
+           class="detailed-info__organization-holder" [innerHTML]="'ORGANISATIONS_EMPTY' | translate"></div>
+      <div *ngIf="detailedInfoContent.organizations.nodes.length > 0" class="detailed-info__organization-holder">
+        <div class="detailed-info__organization-info"
+             *ngFor="let item of sortByNameLength(detailedInfoContent.organizations.nodes)"
+             (click)="redirectToUrl(item.url)">
+          <img class="detailed-info__organization-avatar" src="{{item.avatarUrl}}">
+          <div class="detailed-info__name">{{item.name}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

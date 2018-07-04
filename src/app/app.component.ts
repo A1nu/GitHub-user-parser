@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { GithubService } from './github.service';
+import { GithubService } from './services/github.service';
 import { CookieService } from 'ngx-cookie-service';
-import { AuthorizationService } from './authorization.service';
+import { AuthorizationService } from './services/authorization.service';
+import { LocalStorageService } from 'ngx-store';
 
 @Component({
 	selector: 'app-root',
@@ -17,13 +18,19 @@ export class AppComponent implements OnInit {
 		private translate: TranslateService,
 		private gitHubService: GithubService,
 		private cookieService: CookieService,
-		private authorizationService: AuthorizationService
+		private authorizationService: AuthorizationService,
+		private localStorageService: LocalStorageService
 	) {
 		translate.setDefaultLang('en');
 		translate.use('en');
 	}
 
 	ngOnInit() {
+		this.localStorageService.set(
+			'searchKey',
+			'{ "queryString": "followers:>10000" }'
+		);
+		this.localStorageService.set('username', '');
 		this.checkAuthorization();
 	}
 
@@ -48,7 +55,7 @@ export class AppComponent implements OnInit {
 		}
 	}
 
-	logIntoGithub() {
+	logIntoGithub(): void {
 		const url = 'https://github.com/login/oauth/authorize';
 		const callbackUrl = window.location.origin;
 		const clientId = '60b2fb9b7c5bcff2d316';

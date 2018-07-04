@@ -38,7 +38,7 @@ export class GithubService {
 			});
 	}
 
-	getPopularUsersList(query, variables) {
+	requestData(query: string, variables: string): Promise<any> {
 		const url = 'https://api.github.com/graphql';
 
 		return this.http
@@ -57,7 +57,7 @@ export class GithubService {
 			});
 	}
 
-	setToken(token: string) {
+	setToken(token: string): void {
 		this.accessToken = token;
 	}
 }

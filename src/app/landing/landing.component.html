@@ -1,5 +1,9 @@
-<div class="content">
-  <div class="content__search-field">
+<div class="login-alert" [hidden]="logged">
+  <img src="../../assets/images/zergling.gif">
+  <div class="login-alert__text">Please login first</div>
+</div>
+<div class="content" *ngIf="getAuthorizationStatus()">
+  <div class="search-field">
     <form name="usernameSearch" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate class="search-form">
       <div class="search-form__error">
         <div *ngIf="f.submitted && username.invalid" class="search-form__error__invalid-feedback">
@@ -18,17 +22,22 @@
        </button>
      </div>
     </form>
-  </div>
-
-  <div class="display-switcher content__display-switcher">
-    <div class="display-switcher__text">GitHub most popular users</div>
-    <div class="display-switcher__icons">
-      <div class="material-icons">view_list</div>
-      <div class="material-icons display-switcher__icon_inverted">border_all</div>
+    <div class="search-field__last-search-title" *ngIf="lastSearches != null && lastSearches.length > 0" [innerHTML]="'LAST_SEARCH_TITLE' | translate"></div>
+    <div class="search-field__last-searches" *ngIf="lastSearches != null && lastSearches.length > 0">
+      <div class="search-field__search-item" *ngFor="let item of sortSearches(lastSearches)" (click)="repeatSearch(item)">{{item}}</div>
     </div>
   </div>
 
-  <div class="user-wrapper content__user-wrapper" *ngIf="getAuthorizationStatus()">
+  <div class="display-switcher content__display-switcher">
+    <div class="display-switcher__text">{{searchName ? ('SEARCHING_FOR' | translate:{value: searchName}) : ('GITHUB_POPULAR' | translate)}}</div>
+    <div class="display-switcher__icons">
+      <div class="material-icons display-switcher__icon" (click)="tiled = false">view_list</div>
+      <div class="material-icons display-switcher__icon_inverted" (click)="tiled = true">border_all</div>
+    </div>
+  </div>
+
+  <div class="user-wrapper content__user-wrapper">
+    <div *ngIf="!contentLoading && userDisplayedList.length == 0" [innerHTML]="'EMPTY_RESPONSE' | translate"></div>
     <div class="loader user-wrapper__loader" [hidden]="!contentLoading">
       <div class="loader__holder">
         <div class="loader__preloader"><div></div><div></div><div></div><div></div><div></div>
@@ -36,19 +45,19 @@
       </div>
     </div>
 
-    <div *ngIf="userDisplayedList.length > 0">
-      <div class="user-wrapper__item"  *ngFor="let item of userDisplayedList">
-        <div class="user-wrapper__item user-wrapper__item_user-info">
+    <div *ngIf="userDisplayedList.length > 0" class="user-wrapper" [ngClass]="tiled ? 'user-wrapper_tiled' : ''">
+      <div  *ngFor="let item of userDisplayedList" class="user-wrapper__item" >
+        <div class="user-wrapper__item_user-info" *ngIf="!isEmptyRequest(item)">
           <img src="{{item.avatarUrl}}" class="user-wrapper__avatar">
           <div class="user-wrapper__information">
-            <div class="user-wrapper__name" routerLink="{{item.login}}">{{item.name}}</div>
+            <div class="user-wrapper__name" routerLink="{{item.login}}">{{item.name != null ? item.name : item.login}}</div>
             <div class="user-wrapper__type">{{item.__typename}}</div>
           </div>
         </div>
         <div class="user-wrapper__repositories user-wrapper__repositories_empty"
-             *ngIf="!(item.repositories.nodes.length > 0)">Repos is empty</div>
-        <div class="user-wrapper__repositories" *ngIf="item.repositories.nodes.length > 0">
-          <div class="user-wrapper__repositories__title">User repos</div>
+             *ngIf="!isEmptyRequest(item) && !(item.repositories.nodes.length > 0)" [innerHTML]="'REPOS_EMPTY' | translate"></div>
+        <div class="user-wrapper__repositories" *ngIf="!isEmptyRequest(item) && item.repositories.nodes.length > 0">
+          <div class="user-wrapper__repositories__title" [innerHTML]="'USER_REPOSITORIES' | translate"></div>
           <div class="user-wrapper__repository"
                *ngFor="let repo of sortByNameLength(item.repositories.nodes)"
                (click)="redirectToUrl(repo.url)">

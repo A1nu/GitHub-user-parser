@@ -7,11 +7,12 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { LandingComponent } from './landing/landing.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { GithubService } from './github.service';
+import { GithubService } from './services/github.service';
 import { CookieService } from 'ngx-cookie-service';
 import { AppRoutingModule } from './app-routing.module';
 import { UserComponent } from './user/user.component';
-import { AuthorizationService } from './authorization.service';
+import { AuthorizationService } from './services/authorization.service';
+import { WebStorageModule } from 'ngx-store';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -25,6 +26,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		ReactiveFormsModule,
 		FormsModule,
 		NgxPaginationModule,
+		WebStorageModule,
 		TranslateModule.forRoot({
 			loader: {
 				provide: TranslateLoader,
@@ -35,6 +37,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		AppRoutingModule
 	],
 	providers: [
+		HttpClient,
 		GithubService,
 		CookieService,
 		LandingComponent,
