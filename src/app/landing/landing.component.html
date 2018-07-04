@@ -46,7 +46,7 @@
     </div>
 
     <div *ngIf="userDisplayedList.length > 0" class="user-wrapper" [ngClass]="tiled ? 'user-wrapper_tiled' : ''">
-      <div  *ngFor="let item of userDisplayedList" class="user-wrapper__item" >
+      <div  *ngFor="let item of userDisplayedList" class="user-wrapper__item" [ngClass]="isEmptyRequest(item) ? 'dont-show' : ''">
         <div class="user-wrapper__item_user-info" *ngIf="!isEmptyRequest(item)">
           <img src="{{item.avatarUrl}}" class="user-wrapper__avatar">
           <div class="user-wrapper__information">

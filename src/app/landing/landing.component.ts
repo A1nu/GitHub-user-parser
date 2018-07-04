@@ -13,7 +13,7 @@ export class LandingComponent implements OnInit {
 	public model: any = {};
 	public userDisplayedList = [];
 	public searchName: string;
-	public lastSearches: any[] = [];
+	public lastSearches = [];
 	public firstLoad = true;
 	public tiled: boolean;
 	public logged: boolean;
@@ -119,11 +119,14 @@ export class LandingComponent implements OnInit {
 
 	setLastSearch(key: string): void {
 		this.lastSearches = this.localStorageService.get('lastSearches');
+		if (this.lastSearches == null) {
+			this.lastSearches = [];
+		}
 		if (this.lastSearches != null && this.lastSearches.length > 2) {
 			this.lastSearches.shift();
 			this.lastSearches.push(key);
 		} else {
-			this.lastSearches.unshift(key);
+			this.lastSearches.push(key);
 		}
 		this.localStorageService.set('lastSearches', this.lastSearches);
 	}
@@ -152,6 +155,7 @@ export class LandingComponent implements OnInit {
 
 	repeatSearch(username: string): void {
 		const queryVariables = `{ "queryString": "${username}" }`;
+		this.searchName = username;
 		this.getUsers(this.mostPopularUserQuery, queryVariables);
 	}
 }

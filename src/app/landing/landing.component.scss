@@ -264,8 +264,13 @@
   &__item {
     display: flex;
     border: 1px solid #000000;
+    border-bottom: none;
     padding: 5px;
     justify-content: space-between;
+
+    &:last-child {
+      border-bottom: 1px solid #000000;
+    }
   }
   &__item_user-info {
     display: flex;
@@ -335,6 +340,7 @@
       align-items: center;
       overflow: hidden;
       justify-content: space-around;
+      border: 1px solid #000000;
     }
     &__item_user-info {
       flex-flow: column;
@@ -347,7 +353,8 @@
       margin: unset;
     }
     &__repositories {
-      align-items: center;
+      align-items: baseline;
+      align-self: baseline;
     }
     &__repository {
       text-align: center;
@@ -361,4 +368,8 @@
     font-size: 30px;
     color: #269f42;
   }
+}
+
+.dont-show {
+  display: none;
 }
